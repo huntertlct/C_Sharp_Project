@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace QuanLyQuanCafe
@@ -18,7 +18,8 @@ namespace QuanLyQuanCafe
         //hiển thị các bàn có trong CSDL
         private void LoadTable()
         {
-            List<Table> tableList = func.loadTableList();
+            flpHome.Controls.Clear();
+            List<Table> tableList = func.getTableList();
             foreach(Table item in tableList)
             {
                 Button btn = new Button() {Width = Func.TableWitdh, Height = Func.TableHeight };
@@ -90,6 +91,7 @@ namespace QuanLyQuanCafe
             drinkList = func.getDrinkList();
             drinkDisplay = new List<string>();
             LoadTable();
+            LoadComboboxTable();
         }
 
         private void txtDrinkSearch_TextChanged(object sender, EventArgs e)
@@ -115,6 +117,8 @@ namespace QuanLyQuanCafe
                 {
                     func.createBill(table.No);
                     func.addBillDetail(func.getMaxBillNo(), drinkNo, drinkAmount);
+                    LoadTable();
+                    LoadComboboxTable();
                 }
                 else
                 {
@@ -124,7 +128,44 @@ namespace QuanLyQuanCafe
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Lỗi tạo bàn mới!");
+            }
+        }
+
+        private void bunifuButton6_Click(object sender, EventArgs e)
+        {
+            Table table = lvBill.Tag as Table;
+
+            int billNo = func.getUncheckBillNoByTableNo(table.No);
+
+            if(billNo != -1)
+            {
+                if( MessageBox.Show("Thanh toán hóa đơn " + table.Name + "?", "Xác nhận", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    func.checkOut(billNo);
+                    showBill(table.No);
+                    LoadTable();
+                    LoadComboboxTable();
+                }
+            }
+        }
+
+        private void LoadComboboxTable ()
+        {
+            cbTableSwitch.DataSource = func.getEmptyTableList();
+            cbTableSwitch.DisplayMember = "Name";
+        }
+
+        private void bunifuButton5_Click(object sender, EventArgs e)
+        {
+            int table1No = (lvBill.Tag as Table).No;
+            int table2No = (cbTableSwitch.SelectedItem as Table).No;
+            if( func.getUncheckBillNoByTableNo(table1No) != -1 )
+            if( MessageBox.Show("Chuyển bàn " + table1No + " sang bàn " + table2No + "?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                func.switchTable(table1No, table2No);
+                LoadTable();
+                LoadComboboxTable();
             }
         }
     }

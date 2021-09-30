@@ -16,13 +16,15 @@ namespace QuanLyQuanCafe
         private Point startPoint = new Point();
         private static Func func;
 
-        Home f1 = new Home(func);
-        Statistic f2 = new Statistic(func);
+        Home f1;
+        Statistic f2;
 
         public StaffForm(Func tmp)
         {
             InitializeComponent();
             func = tmp;
+            f1 = new Home(func);
+            f2 = new Statistic(func);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

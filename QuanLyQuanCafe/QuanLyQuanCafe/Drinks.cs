@@ -23,5 +23,10 @@ namespace QuanLyQuanCafe
         {
             func.loadDrinkAdmin(dgvDrink);
         }
+
+        private void bunifuButton1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

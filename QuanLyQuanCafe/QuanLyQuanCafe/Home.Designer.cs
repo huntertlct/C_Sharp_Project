@@ -30,15 +30,15 @@ namespace QuanLyQuanCafe
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Home));
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges7 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges8 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges9 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges1 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges2 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges3 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
             this.panel1 = new System.Windows.Forms.Panel();
             this.flpHome = new System.Windows.Forms.FlowLayoutPanel();
             this.cbDrink = new System.Windows.Forms.ComboBox();
             this.nudDrinkAmount = new System.Windows.Forms.NumericUpDown();
             this.txtDrinkSearch = new System.Windows.Forms.TextBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.cbTableSwitch = new System.Windows.Forms.ComboBox();
             this.bunifuButton4 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
             this.bunifuButton5 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
             this.bunifuButton6 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
@@ -67,6 +67,7 @@ namespace QuanLyQuanCafe
             // 
             // flpHome
             // 
+            this.flpHome.AutoScroll = true;
             this.flpHome.Location = new System.Drawing.Point(0, 0);
             this.flpHome.Name = "flpHome";
             this.flpHome.Size = new System.Drawing.Size(509, 455);
@@ -109,14 +110,14 @@ namespace QuanLyQuanCafe
             this.txtDrinkSearch.TabIndex = 5;
             this.txtDrinkSearch.TextChanged += new System.EventHandler(this.txtDrinkSearch_TextChanged);
             // 
-            // comboBox2
+            // cbTableSwitch
             // 
-            this.comboBox2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(521, 420);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(83, 21);
-            this.comboBox2.TabIndex = 9;
+            this.cbTableSwitch.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.cbTableSwitch.FormattingEnabled = true;
+            this.cbTableSwitch.Location = new System.Drawing.Point(521, 420);
+            this.cbTableSwitch.Name = "cbTableSwitch";
+            this.cbTableSwitch.Size = new System.Drawing.Size(83, 21);
+            this.cbTableSwitch.TabIndex = 9;
             // 
             // bunifuButton4
             // 
@@ -137,11 +138,11 @@ namespace QuanLyQuanCafe
             this.bunifuButton4.ColorContrastOnClick = 45;
             this.bunifuButton4.ColorContrastOnHover = 45;
             this.bunifuButton4.Cursor = System.Windows.Forms.Cursors.Default;
-            borderEdges7.BottomLeft = true;
-            borderEdges7.BottomRight = true;
-            borderEdges7.TopLeft = true;
-            borderEdges7.TopRight = true;
-            this.bunifuButton4.CustomizableEdges = borderEdges7;
+            borderEdges1.BottomLeft = true;
+            borderEdges1.BottomRight = true;
+            borderEdges1.TopLeft = true;
+            borderEdges1.TopRight = true;
+            this.bunifuButton4.CustomizableEdges = borderEdges1;
             this.bunifuButton4.DialogResult = System.Windows.Forms.DialogResult.None;
             this.bunifuButton4.DisabledBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(191)))), ((int)(((byte)(191)))));
             this.bunifuButton4.DisabledFillColor = System.Drawing.Color.Empty;
@@ -229,11 +230,11 @@ namespace QuanLyQuanCafe
             this.bunifuButton5.ColorContrastOnClick = 45;
             this.bunifuButton5.ColorContrastOnHover = 45;
             this.bunifuButton5.Cursor = System.Windows.Forms.Cursors.Default;
-            borderEdges8.BottomLeft = true;
-            borderEdges8.BottomRight = true;
-            borderEdges8.TopLeft = true;
-            borderEdges8.TopRight = true;
-            this.bunifuButton5.CustomizableEdges = borderEdges8;
+            borderEdges2.BottomLeft = true;
+            borderEdges2.BottomRight = true;
+            borderEdges2.TopLeft = true;
+            borderEdges2.TopRight = true;
+            this.bunifuButton5.CustomizableEdges = borderEdges2;
             this.bunifuButton5.DialogResult = System.Windows.Forms.DialogResult.None;
             this.bunifuButton5.DisabledBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(191)))), ((int)(((byte)(191)))));
             this.bunifuButton5.DisabledFillColor = System.Drawing.Color.Empty;
@@ -300,6 +301,7 @@ namespace QuanLyQuanCafe
             this.bunifuButton5.TextMarginLeft = 0;
             this.bunifuButton5.TextPadding = new System.Windows.Forms.Padding(0);
             this.bunifuButton5.UseDefaultRadiusAndThickness = true;
+            this.bunifuButton5.Click += new System.EventHandler(this.bunifuButton5_Click);
             // 
             // bunifuButton6
             // 
@@ -320,11 +322,11 @@ namespace QuanLyQuanCafe
             this.bunifuButton6.ColorContrastOnClick = 45;
             this.bunifuButton6.ColorContrastOnHover = 45;
             this.bunifuButton6.Cursor = System.Windows.Forms.Cursors.Default;
-            borderEdges9.BottomLeft = true;
-            borderEdges9.BottomRight = true;
-            borderEdges9.TopLeft = true;
-            borderEdges9.TopRight = true;
-            this.bunifuButton6.CustomizableEdges = borderEdges9;
+            borderEdges3.BottomLeft = true;
+            borderEdges3.BottomRight = true;
+            borderEdges3.TopLeft = true;
+            borderEdges3.TopRight = true;
+            this.bunifuButton6.CustomizableEdges = borderEdges3;
             this.bunifuButton6.DialogResult = System.Windows.Forms.DialogResult.None;
             this.bunifuButton6.DisabledBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(191)))), ((int)(((byte)(191)))));
             this.bunifuButton6.DisabledFillColor = System.Drawing.Color.Empty;
@@ -391,6 +393,7 @@ namespace QuanLyQuanCafe
             this.bunifuButton6.TextMarginLeft = 0;
             this.bunifuButton6.TextPadding = new System.Windows.Forms.Padding(0);
             this.bunifuButton6.UseDefaultRadiusAndThickness = true;
+            this.bunifuButton6.Click += new System.EventHandler(this.bunifuButton6_Click);
             // 
             // lvBill
             // 
@@ -469,7 +472,7 @@ namespace QuanLyQuanCafe
             this.Controls.Add(this.bunifuButton6);
             this.Controls.Add(this.bunifuButton5);
             this.Controls.Add(this.bunifuButton4);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.cbTableSwitch);
             this.Controls.Add(this.txtDrinkSearch);
             this.Controls.Add(this.nudDrinkAmount);
             this.Controls.Add(this.cbDrink);
@@ -491,7 +494,7 @@ namespace QuanLyQuanCafe
         private System.Windows.Forms.ComboBox cbDrink;
         private System.Windows.Forms.NumericUpDown nudDrinkAmount;
         private System.Windows.Forms.TextBox txtDrinkSearch;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox cbTableSwitch;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton bunifuButton4;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton bunifuButton5;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton bunifuButton6;

@@ -210,8 +210,7 @@ BEGIN
 			employee_address AS 'Địa chỉ',
 			account_user AS 'Tài khoản',
 			account_type AS 'Loại TK'
-	FROM dbo.Cf_Employee, dbo.Cf_Account
-	WHERE dbo.Cf_Employee.employee_no = dbo.Cf_Account.employee_no
+	FROM dbo.Cf_Employee LEFT OUTER JOIN dbo.Cf_Account ON dbo.Cf_Employee.employee_no = dbo.Cf_Account.employee_no
 END
 GO
 
@@ -266,11 +265,11 @@ CREATE PROCEDURE createBillByTableNo
 AS
 BEGIN
 	INSERT INTO dbo.Cf_Bill (bill_checkintime, bill_checkouttime, bill_stt, table_no )
-	VALUES ( GETDATE(), null, @tableNo, 0)  
+	VALUES ( GETDATE(), null, 0, @tableNo)  
 END
 GO
 
-ALTER PROCEDURE addBillDetail
+CREATE PROCEDURE addBillDetail
 @billNo INT,
 @drinkNo INT,
 @drinkAmount INT
@@ -306,25 +305,189 @@ BEGIN
 END
 GO
 
--- test script
---USE QuanLyQuanCafe
---SELECT cf_Employee.employee_no AS 'Mã NV',
---		employee_name AS 'Họ Tên',
---		employee_dob AS 'Ngày sinh',
---		employee_id AS 'CMND',
---		employee_address AS 'Địa chỉ',
---		account_user AS 'Tài khoản',
---		account_type AS 'Loại TK'
---FROM dbo.Cf_Employee, dbo.Cf_Account
---WHERE dbo.Cf_Employee.employee_no = dbo.Cf_Account.employee_no
---GO
+CREATE PROCEDURE payBill
+@billNo INT
+AS
+BEGIN
+    UPDATE dbo.Cf_Bill
+	SET bill_stt = 1,
+		bill_checkouttime = GETDATE()
+	WHERE bill_no = @billNo
+END
+GO
 
---SELECT employee_name
---FROM cf_employee, dbo.Cf_Account
---WHERE cf_employee.employee_no = cf_account.employee_no and cf_account.account_user = 'steve'
---GO
+CREATE PROCEDURE switchTable
+@table1 INT,
+@table2 INT
+AS
+BEGIN
+	DECLARE @firstBillNo INT
+	DECLARE @secondBillNo INT
 
---SELECT dbo.Cf_Account.account_pwd
---FROM dbo.Cf_Account
---WHERE dbo.Cf_Account.account_user = 'steve'
---GO
+	SELECT @firstBillNo = bill_no FROM dbo.Cf_Bill WHERE table_no = @table1 AND bill_stt = 0
+	SELECT @secondBillNo = bill_no FROM dbo.Cf_Bill WHERE table_no = @table2 AND bill_stt = 0
+
+	DECLARE @isTable1Empty INT = 0
+	DECLARE @isTable2Empty INT = 0
+
+
+	IF (@firstBillNo IS NULL)
+	BEGIN
+	    INSERT INTO dbo.Cf_Bill (bill_checkintime, bill_checkouttime, bill_stt, table_no)
+	    VALUES (GETDATE(), NULL, 0, @table1)
+		SELECT @firstBillNo = MAX(bill_no) FROM dbo.Cf_Bill WHERE table_no = @table1 AND bill_stt = 0
+	END
+	IF (@secondBillNo IS NULL)
+	BEGIN
+	    INSERT INTO dbo.Cf_Bill (bill_checkintime, bill_checkouttime, bill_stt, table_no)
+	    VALUES (GETDATE(), NULL, 0, @table2)
+		SELECT @secondBillNo = MAX(bill_no) FROM dbo.Cf_Bill WHERE table_no = @table2 AND bill_stt = 0
+	END
+
+	SELECT billdetail_no INTO BillDetailNoTable FROM dbo.Cf_BillDetail WHERE bill_no = @secondBillNo
+
+	UPDATE dbo.Cf_BillDetail SET bill_no = @secondBillNo WHERE bill_no = @firstBillNo
+
+	UPDATE dbo.Cf_BillDetail SET bill_no = @firstBillNo WHERE billdetail_no IN (SELECT * FROM dbo.BillDetailNoTable)
+
+	SELECT @isTable1Empty = COUNT(*) FROM dbo.Cf_BillDetail WHERE bill_no = @firstBillNo
+	SELECT @isTable2Empty = COUNT(*) FROM dbo.Cf_BillDetail WHERE bill_no = @secondBillNo
+
+	IF(@isTable1Empty = 0)
+	BEGIN
+	    UPDATE dbo.Cf_Table SET table_stt = N'Trống' WHERE table_no = @table1
+		DELETE FROM dbo.Cf_Bill WHERE bill_no = @firstBillNo
+	END
+
+	IF(@isTable2Empty = 0)
+	BEGIN
+	    UPDATE dbo.Cf_Table SET table_stt = N'Trống' WHERE table_no = @table2
+		DELETE FROM dbo.Cf_Bill WHERE bill_no = @secondBillNo
+	END
+
+	DROP TABLE dbo.BillDetailNoTable
+END
+GO
+
+CREATE PROCEDURE createEmployee
+@name NVARCHAR(70),
+@dob DATE,
+@id CHAR(12),
+@address NVARCHAR(200),
+@account VARCHAR(50),
+@pwd CHAR(64),
+@accType INT
+AS
+BEGIN
+	INSERT INTO dbo.Cf_Employee ( employee_name, employee_dob, employee_id, employee_address)
+	VALUES ( @name, @dob, @id, @address)
+
+	DECLARE @empNo INT
+	SELECT @empNo = MAX(dbo.Cf_Employee.employee_no) FROM dbo.Cf_Employee
+	INSERT INTO dbo.Cf_Account ( account_user, account_pwd, account_type, employee_no)
+	VALUES (@account, @pwd, @accType, @empNo)
+END
+GO
+
+CREATE PROCEDURE getEmployeeInfoByNo
+@empNo INT
+AS
+BEGIN
+	SELECT Cf_Employee.employee_no, employee_name, employee_dob, employee_id, employee_address, account_user, account_type
+	FROM dbo.Cf_Employee LEFT OUTER JOIN dbo.Cf_Account ON Cf_Employee.employee_no = Cf_Account.employee_no
+	WHERE Cf_Employee.employee_no = @empNo
+END
+GO
+
+CREATE PROCEDURE resetPwdByEmpNo
+@empNo INT,
+@newPwd CHAR(64)
+AS
+BEGIN
+	UPDATE dbo.Cf_Account
+	SET account_pwd = @newPwd
+	WHERE employee_no = @empNo
+END
+GO
+
+CREATE PROCEDURE deleteEmployeeByNo
+@empNo INT
+AS
+BEGIN
+	IF (@empNo <> 1)
+    DELETE FROM dbo.Cf_Employee
+	WHERE employee_no = @empNo
+END
+GO
+
+CREATE PROCEDURE UpdateEmpInfoByNo
+@empNo INT,
+@empName NVARCHAR(70),
+@empDob DATE,
+@empID CHAR(12),
+@empAddress NVARCHAR(200),
+@accType INT
+AS
+BEGIN
+    UPDATE dbo.Cf_Employee
+	SET employee_name = @empName,
+		employee_dob = @empDob,
+		employee_id = @empID,
+		employee_address = @empAddress
+	WHERE employee_no = @empNo
+	IF( @empNo <> 1 )
+		UPDATE dbo.Cf_Account
+		SET account_type = @accType
+		WHERE employee_no = @empNo
+END
+GO
+
+------------------------------------------ TRIGGER
+CREATE TRIGGER TRIGGER_UpdateBillDetail
+ON dbo.Cf_BillDetail FOR INSERT, UPDATE
+AS
+BEGIN
+	DECLARE @billNo INT
+	DECLARE @tableNo INT
+
+	SELECT @billNo = bill_no
+	FROM Inserted
+
+	SELECT @tableNo = table_no
+	FROM dbo.Cf_Bill
+	WHERE bill_no = @billNo
+		AND bill_stt = 0
+
+	UPDATE dbo.Cf_Table 
+	SET table_stt = N'Có người'
+	WHERE table_no = @tableNo
+END
+GO
+
+CREATE TRIGGER TRIGGER_UpdateBill
+ON dbo.Cf_Bill FOR INSERT, UPDATE
+AS
+BEGIN
+    DECLARE @billNo INT
+
+	SELECT @billNo = bill_no
+	FROM Inserted
+
+	DECLARE @table_no INT
+
+	SELECT @table_no = table_no
+	FROM dbo.Cf_Bill
+	WHERE bill_no = @billNo
+
+	DECLARE @count INT = 0
+	SELECT @count = COUNT(*)
+	FROM dbo.Cf_Bill
+	WHERE table_no = @table_no
+		AND bill_stt = 0
+
+	IF (@count = 0)
+		UPDATE dbo.Cf_Table
+		SET table_stt = N'Trống'
+		WHERE table_no = @table_no
+END
+GO
