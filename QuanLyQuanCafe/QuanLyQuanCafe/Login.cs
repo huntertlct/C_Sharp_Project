@@ -19,10 +19,7 @@ namespace QuanLyQuanCafe
         {
             if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 1)
             {
-                if(fAdmin == null)
-                {
-                    fAdmin = new AdminForm(func);
-                }    
+                fAdmin = new AdminForm(func);
                 this.Hide();
                 fAdmin.ShowDialog();
                 if (fAdmin.IsDisposed)
@@ -36,10 +33,7 @@ namespace QuanLyQuanCafe
             }
             else if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 0)
             {
-                if(fStaff == null)
-                {
-                    fStaff = new StaffForm(func);
-                }    
+                fStaff = new StaffForm(func);
                 this.Hide();
                 fStaff.ShowDialog();
                 if (fStaff.IsDisposed)

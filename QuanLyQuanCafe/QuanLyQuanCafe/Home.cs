@@ -12,8 +12,7 @@ namespace QuanLyQuanCafe
     {
         private Func func;
         private int billTotal;
-        List<Drink> drinkList;
-        List<string> drinkDisplay;
+        private List<Drink> drinkList;
 
         //hiển thị các bàn có trong CSDL
         private void LoadTable()
@@ -89,8 +88,6 @@ namespace QuanLyQuanCafe
             InitializeComponent();
             func = tmp;
             drinkList = func.getDrinkList();
-            drinkDisplay = new List<string>();
-            LoadTable();
             LoadComboboxTable();
         }
 
@@ -102,6 +99,7 @@ namespace QuanLyQuanCafe
         private void Home_Load(object sender, EventArgs e)
         {
             loadDisplayDrink("");
+            LoadTable();
         }
 
         private void bunifuButton4_Click(object sender, EventArgs e)
@@ -135,19 +133,22 @@ namespace QuanLyQuanCafe
         private void bunifuButton6_Click(object sender, EventArgs e)
         {
             Table table = lvBill.Tag as Table;
-
-            int billNo = func.getUncheckBillNoByTableNo(table.No);
-
-            if(billNo != -1)
+            if (table != null)
             {
-                if( MessageBox.Show("Thanh toán hóa đơn " + table.Name + "?", "Xác nhận", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                int billNo = func.getUncheckBillNoByTableNo(table.No);
+
+                if (billNo != -1)
                 {
-                    func.checkOut(billNo);
-                    showBill(table.No);
-                    LoadTable();
-                    LoadComboboxTable();
+                    if (MessageBox.Show("Thanh toán hóa đơn " + table.Name + "?", "Xác nhận", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                    {
+                        func.checkOut(billNo, txtBillTotal.Text.Replace(",", "").Replace("đ", ""));
+                        showBill(table.No);
+                        LoadTable();
+                        LoadComboboxTable();
+                    }
                 }
             }
+            else MessageBox.Show("Vui lòng chọn bàn cần thanh toán!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void LoadComboboxTable ()

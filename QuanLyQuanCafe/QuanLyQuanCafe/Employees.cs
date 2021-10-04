@@ -23,11 +23,7 @@ namespace QuanLyQuanCafe
         {
             InitializeComponent();
             func = tmp;
-        }
-
-        private void Employees_Load(object sender, EventArgs e)
-        {
-            func.loadEmployee(dgvEmployee);
+            func.loadEmployee(dgvEmployee, "");
         }
 
         private void dgvEmployee_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -51,7 +47,8 @@ namespace QuanLyQuanCafe
             else
             {
                 func.createEmployee(txtName.Text, dpDOB.Text, txtID.Text, txtxAddress.Text, txtAccount.Text, Convert.ToInt32(cbAccType.SelectedItem));
-                func.loadEmployee(dgvEmployee);
+                func.loadEmployee(dgvEmployee, "");
+                bunifuButton4_Click(null, null);
             }
         }
 
@@ -82,7 +79,8 @@ namespace QuanLyQuanCafe
             if (txtEmpNo.Text.Length > 0)
             {
                 func.deleteEmployee(txtEmpNo.Text);
-                func.loadEmployee(dgvEmployee);
+                func.loadEmployee(dgvEmployee, "");
+                bunifuButton4_Click(null, null);
             }
         }
 
@@ -91,9 +89,14 @@ namespace QuanLyQuanCafe
             if (txtName.Text.Length > 0 && txtID.Text.Length > 0)
             {
                 func.updateEmpInfo(txtEmpNo.Text, txtName.Text, dpDOB.Text, txtID.Text, txtxAddress.Text, cbAccType.Text);
-                func.loadEmployee(dgvEmployee);
+                func.loadEmployee(dgvEmployee, "");
             }
             else MessageBox.Show("Họ tên và CMND không được trống!", "Lỗi");
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            func.loadEmployee(dgvEmployee, txtFilter.Text);
         }
     }
 }

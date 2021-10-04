@@ -53,10 +53,10 @@ namespace QuanLyQuanCafe
                     this.user = user;
                     this.displayName = cmd.ExecuteScalar().ToString();
                     cmd = new SqlCommand("EXEC dbo.getAccType @acc_user = '" + user + "'", conn);
-                    return Convert.ToInt32( cmd.ExecuteScalar());
+                    return Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -78,16 +78,28 @@ namespace QuanLyQuanCafe
         }
 
         //load dữ liệu nhân viên cho form admin
-        public void loadEmployee(DataGridView dgv)
+        public void loadEmployee(DataGridView dgv, string filter)
         {
             try
             {
                 sqlstr = "EXEC getEmployee";
                 SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
-                DataSet ds = new DataSet();
+                DataTable tmp = new DataTable();
 
-                da.Fill(ds);
-                dgv.DataSource = ds.Tables[0];
+                da.Fill(tmp);
+                DataTable dt = tmp.Clone();
+                if (filter.Length > 0)
+                {
+                    foreach (DataRow row in tmp.Rows)
+                    {
+                        if (row["Họ tên"].ToString().ToLower().Contains(filter.ToLower()))
+                        {
+                            dt.ImportRow(row);
+                        }
+                    }
+                }
+                else dt = tmp;
+                dgv.DataSource = dt;
                 dgv.AutoResizeColumns();
                 dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             }
@@ -98,7 +110,7 @@ namespace QuanLyQuanCafe
         }
 
         //load dữ liệu nước uống cho form admin
-        public void loadDrinkAdmin(DataGridView dgv)
+        public void loadDrinkAdmin(DataGridView dgv, string filter)
         {
             try
             {
@@ -107,12 +119,22 @@ namespace QuanLyQuanCafe
                                 " drink_price AS 'Giá'" +
                         " FROM cf_drink";
                 SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
-                DataSet ds = new DataSet();
+                DataTable tmp = new DataTable();
 
-                da.Fill(ds);
-                dgv.DataSource = ds.Tables[0];
-                //dgv.AutoResizeColumns();
-                //dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                da.Fill(tmp);
+                DataTable dt = tmp.Clone();
+                if (filter.Length > 0)
+                {
+                    foreach (DataRow row in tmp.Rows)
+                    {
+                        if (row["Tên đồ uống"].ToString().ToLower().Contains(filter.ToLower()))
+                        {
+                            dt.ImportRow(row);
+                        }
+                    }
+                }
+                else dt = tmp;
+                dgv.DataSource = dt;
             }
             catch (Exception ex)
             {
@@ -159,7 +181,7 @@ namespace QuanLyQuanCafe
                     MessageBox.Show("Mật khẩu xác nhận chưa chính xác!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -175,7 +197,7 @@ namespace QuanLyQuanCafe
             DataTable dt = new DataTable();
             da.Fill(dt);
 
-            foreach(DataRow item in dt.Rows)
+            foreach (DataRow item in dt.Rows)
             {
                 Table table = new Table(item);
                 tableList.Add(table);
@@ -215,7 +237,7 @@ namespace QuanLyQuanCafe
             DataTable dt = new DataTable();
             da.Fill(dt);
 
-            if(dt.Rows.Count > 0)
+            if (dt.Rows.Count > 0)
             {
                 Bill bill = new Bill(dt.Rows[0]);
                 return bill.BillNo;
@@ -233,7 +255,7 @@ namespace QuanLyQuanCafe
             DataTable dt = new DataTable();
             da.Fill(dt);
 
-            foreach(DataRow item in dt.Rows)
+            foreach (DataRow item in dt.Rows)
             {
                 BillDetail detail = new BillDetail(item);
                 billDetailList.Add(detail);
@@ -249,7 +271,7 @@ namespace QuanLyQuanCafe
             SqlDataAdapter ds = new SqlDataAdapter("EXEC getDrinkList", conn);
             DataTable dt = new DataTable();
             ds.Fill(dt);
-            foreach(DataRow row in dt.Rows)
+            foreach (DataRow row in dt.Rows)
             {
                 Drink item = new Drink(row);
                 drinkList.Add(item);
@@ -273,9 +295,9 @@ namespace QuanLyQuanCafe
             {
                 sqlstr = "SELECT MAX(bill_no) FROM cf_bill";
                 cmd = new SqlCommand(sqlstr, conn);
-                return Convert.ToInt32( cmd.ExecuteScalar());
+                return Convert.ToInt32(cmd.ExecuteScalar());
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 return -1;
             }
@@ -298,9 +320,9 @@ namespace QuanLyQuanCafe
         }
 
         //thanh toán hóa đơn
-        public void checkOut(int No)
+        public void checkOut(int no, string total)
         {
-            sqlstr = "EXEC payBill @billNo = " + No;
+            sqlstr = "EXEC dbo.payBill @billNo = " + no + ", @total = " + total;
             cmd = new SqlCommand(sqlstr, conn);
             cmd.ExecuteNonQuery();
         }
@@ -316,24 +338,28 @@ namespace QuanLyQuanCafe
         //tạo nhân viên mới
         public void createEmployee(string name, string dobTmp, string id, string address, string account, int accType)
         {
-            Array arr = dobTmp.Split('/');
-            string dob = "";
-            foreach(string s in arr)
-                dob = s + dob;
-            if (name.Length != 0 && id.Length != 0 && account.Length != 0 && (accType == 1 || accType == 0))
+            if (this.Equals("steve") && accType == 1)
             {
-                string hPwd = ComputeHash(id, new SHA256CryptoServiceProvider());
-                hPwd = hPwd.Replace("-", "").ToLower();
-                sqlstr = "EXEC dbo.createEmployee @name = N'" + name + "', @dob = '" + dob + "', @id = '" + id + "', @address = N'" + address 
-                                            + "', @account = '" + account + "', @pwd = '" + hPwd + "', @accType = " + accType;
-                cmd = new SqlCommand(sqlstr, conn);
-                cmd.ExecuteNonQuery();
+                Array arr = dobTmp.Split('/');
+                string dob = "";
+                foreach (string s in arr)
+                    dob = s + dob;
+                if (name.Length != 0 && id.Length != 0 && account.Length != 0 && (accType == 1 || accType == 0))
+                {
+                    string hPwd = ComputeHash(id, new SHA256CryptoServiceProvider());
+                    hPwd = hPwd.Replace("-", "").ToLower();
+                    sqlstr = "EXEC dbo.createEmployee @name = N'" + name + "', @dob = '" + dob + "', @id = '" + id + "', @address = N'" + address
+                                                + "', @account = '" + account + "', @pwd = '" + hPwd + "', @accType = " + accType;
+                    cmd = new SqlCommand(sqlstr, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                else MessageBox.Show("Vui lòng nhập đủ các trường thông tin!", "Thông báo");
             }
-            else MessageBox.Show("Vui lòng nhập đủ các trường thông tin!", "Thông báo");
+            else MessageBox.Show("Bạn không có quyền tạo tài khoản quản trị!\nVui lòng liên hệ quản trị viên cấp cao!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        //hiển thị thông tin nhân viên lên form
-        public Employee getEmployeeInfo (string empNo)
+        //lấy thông tin nhân viên để hiển thị lên form
+        public Employee getEmployeeInfo(string empNo)
         {
             sqlstr = "EXEC dbo.getEmployeeInfoByNo @empNo = " + empNo;
             SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
@@ -348,18 +374,22 @@ namespace QuanLyQuanCafe
         //đặt lại mật khẩu cho tài khoản
         public void resetPassword(string empNo)
         {
-            sqlstr = "EXEC dbo.getEmployeeInfoByNo @empNo = " + empNo;
-            SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
-            DataTable dt = new DataTable();
+            if (empNo.Equals("1") && this.user.Equals("steve"))
+            {
+                sqlstr = "EXEC dbo.getEmployeeInfoByNo @empNo = " + empNo;
+                SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
+                DataTable dt = new DataTable();
 
-            da.Fill(dt);
-            Employee emp = new Employee(dt.Rows[0]);
+                da.Fill(dt);
+                Employee emp = new Employee(dt.Rows[0]);
 
-            string hPwd = ComputeHash(emp.Emp_id.Trim(), new SHA256CryptoServiceProvider());
-            hPwd = hPwd.Replace("-", "").ToLower();
-            sqlstr = "EXEC dbo.resetPwdByEmpNo @empNo = " + empNo + ", @newPwd = '" + hPwd + "'";
-            cmd = new SqlCommand(sqlstr, conn);
-            cmd.ExecuteNonQuery();
+                string hPwd = ComputeHash(emp.Emp_id.Trim(), new SHA256CryptoServiceProvider());
+                hPwd = hPwd.Replace("-", "").ToLower();
+                sqlstr = "EXEC dbo.resetPwdByEmpNo @empNo = " + empNo + ", @newPwd = '" + hPwd + "'";
+                cmd = new SqlCommand(sqlstr, conn);
+                cmd.ExecuteNonQuery();
+            }
+            else MessageBox.Show("Bạn không thể đặt lại mật khẩu cho tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         //xóa nhân viên
@@ -369,22 +399,86 @@ namespace QuanLyQuanCafe
             cmd = new SqlCommand(sqlstr, conn);
             cmd.ExecuteNonQuery();
         }
-        
+
         //sửa thông tin nhân viên
         public void updateEmpInfo(string empNo, string name, string dobTmp, string id, string address, string accType)
         {
-            Array arr = dobTmp.Split('/');
-            string dob = "";
-            foreach (string s in arr)
-                dob = s + dob;
-            sqlstr = "EXEC dbo.UpdateEmpInfoByNo @empNo = " + empNo 
-                                            + ", @empName = N'" + name 
-                                            + "', @empDob = '" + dob 
-                                            + "', @empID = '" + id 
-                                            + "', @empAddress = N'" + address 
-                                            + "', @accType = " + accType;
+            if (empNo.Equals("1") && this.user.Equals("steve"))
+            {
+                Array arr = dobTmp.Split('/');
+                string dob = "";
+                foreach (string s in arr)
+                    dob = s + dob;
+                sqlstr = "EXEC dbo.updateEmpInfoByNo @empNo = " + empNo
+                                                + ", @empName = N'" + name
+                                                + "', @empDob = '" + dob
+                                                + "', @empID = '" + id
+                                                + "', @empAddress = N'" + address
+                                                + "', @accType = " + accType;
+                cmd = new SqlCommand(sqlstr, conn);
+                cmd.ExecuteNonQuery();
+            }
+            else MessageBox.Show("Bạn không thể sửa thông tin của tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        //lấy thông tin đồ uống để hiển thị lên form
+        public Drink getDrinkInfo(string drinkNo)
+        {
+            sqlstr = "EXEC dbo.getDrinkInfoByNo @drinkNo = " + drinkNo;
+            SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
+            DataTable dt = new DataTable();
+
+            da.Fill(dt);
+            Drink drink = new Drink(dt.Rows[0]);
+            return drink;
+        }
+
+        //tạo nước uống mới
+        public void createDrink(string name, int price)
+        {
+            if (name.Length != 0 && price > 0)
+            {
+                sqlstr = "EXEC dbo.createDrink @name = N'" + name + "', @price = " + price;
+                cmd = new SqlCommand(sqlstr, conn);
+                cmd.ExecuteNonQuery();
+            }
+            else MessageBox.Show("Vui lòng nhập đủ các trường thông tin!", "Thông báo");
+        }
+
+        //xóa nước uống
+        public void deleteDrink(string drinkNo)
+        {
+            sqlstr = "EXEC dbo.deleteDrinkByNo @drinkNo = " + drinkNo;
             cmd = new SqlCommand(sqlstr, conn);
             cmd.ExecuteNonQuery();
+        }
+
+        //sửa thông tin nước uống
+        public void updateDrinkInfo(string drinkNo, string name, string price)
+        {
+            sqlstr = "EXEC dbo.updateDrinkInfoByNo @no = " + drinkNo + ", @name = N'" + name + "', @price = " + price;
+            cmd = new SqlCommand(sqlstr, conn);
+            cmd.ExecuteNonQuery();
+        }
+
+        //load dữ liệu thống kê
+        public void loadStatistic(DataGridView dgv, string type, string from, string to)
+        {
+            try
+            {
+                sqlstr = "EXEC dbo.getStatistic @type = N'" + type + "', @fromDate = '" + from + "', @toDate = '" + to + "'";
+                SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                dgv.DataSource = dt;
+                dgv.AutoResizeColumns();
+                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Lỗi load dữ liệu thống kê", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

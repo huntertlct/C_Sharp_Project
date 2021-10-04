@@ -52,6 +52,7 @@ CREATE TABLE Cf_Bill(
 	bill_checkintime DATETIME NOT NULL DEFAULT SYSDATETIME(),
 	bill_checkouttime DATETIME,
 	bill_stt INT NOT NULL DEFAULT 0, -- 1 là đã thanh toán | 0 là chưa thanh toán
+	bill_total INT NOT NULL DEFAULT 0,
 	table_no INT NOT NULL,
 
 	CONSTRAINT pk_cf_bill PRIMARY KEY (bill_no),
@@ -73,100 +74,35 @@ CREATE TABLE Cf_BillDetail(
 GO
 
 -- insert values
---INSERT INTO dbo.Cf_Employee
---(
---    employee_name,
---    employee_dob,
---    employee_id,
---    employee_address
---)
---VALUES
---(   N'steve phan',       -- employee_name - nvarchar(70)
---    '2000-01-13', -- employee_dob - date
---    '362527137',        -- employee_id - char(12)
---    N'Thốt Nốt - Cần Thơ'        -- employee_address - nvarchar(200)
---    )
---GO
+INSERT INTO dbo.Cf_Employee
+(
+    employee_name,
+    employee_dob,
+    employee_id,
+    employee_address
+)
+VALUES
+(   N'steve phan',       -- employee_name - nvarchar(70)
+    '2000-01-13', -- employee_dob - date
+    '362527137',        -- employee_id - char(12)
+    N'Thốt Nốt - Cần Thơ'        -- employee_address - nvarchar(200)
+    )
+GO
 
---INSERT INTO dbo.Cf_Account
---(
---    account_user,
---    account_pwd,
---    account_type,
---    employee_no
---)
---VALUES
---(   'steve', -- account_user - varchar(50)
---    'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', -- account_pwd - char(64) -- pwd là "123"
---    1,  -- account_type - int
---    1   -- employee_no - int
---    )
---GO
-
---INSERT INTO dbo.Cf_Drink
---(
---    drink_name,
---    drink_price
---)
---VALUES
---(   N'Café đá', -- drink_name - nvarchar(50)
---    15000 -- drink_price - int
---    )
---GO
-
---INSERT INTO dbo.Cf_Drink
---(
---    drink_name,
---    drink_price
---)
---VALUES
---(   N'Café sữa', -- drink_name - nvarchar(50)
---    20000 -- drink_price - int
---    )
---GO
-
---DECLARE @i INT = 1
---WHILE @i <= 20
---BEGIN
---    INSERT INTO dbo.Cf_Table(table_name) VALUES(N'Bàn ' + CAST(@i AS VARCHAR(3)))
---	SET @i = @i + 1
---END
---GO
-
---INSERT INTO dbo.Cf_Bill
---(
---    bill_checkintime,
---    bill_checkouttime,
---    bill_stt,
---    table_no
---)
---VALUES
---(   GETDATE(), -- bill_checkintime - datetime
---    NULL, -- bill_checkouttime - datetime
---    0,         -- bill_stt - int
---    1         -- table_no - int
---)
---GO
-
---INSERT INTO dbo.Cf_Bill (bill_checkintime, bill_checkouttime, bill_stt, table_no)
---VALUES( GETDATE(), GETDATE(), 1, 2)
---GO
-
---INSERT INTO dbo.Cf_BillDetail ( bill_no, drink_no, drink_amount )
---VALUES ( 1, 1, 2 )
---GO
-
---INSERT INTO dbo.Cf_BillDetail ( bill_no, drink_no, drink_amount )
---VALUES ( 1, 2, 4 )
---GO
-
---INSERT INTO dbo.Cf_BillDetail ( bill_no, drink_no, drink_amount )
---VALUES ( 2, 1, 2 )
---GO
-
---INSERT INTO dbo.Cf_BillDetail ( bill_no, drink_no, drink_amount )
---VALUES ( 2, 2, 4 )
---GO
+INSERT INTO dbo.Cf_Account
+(
+    account_user,
+    account_pwd,
+    account_type,
+    employee_no
+)
+VALUES
+(   'steve', -- account_user - varchar(50)
+    'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', -- account_pwd - char(64) -- pwd là "123"
+    1,  -- account_type - int
+    1   -- employee_no - int
+    )
+GO
 
 -- Procedure
 CREATE PROCEDURE getPwd
@@ -203,8 +139,8 @@ GO
 CREATE PROCEDURE getEmployee
 AS
 BEGIN
-	  SELECT cf_Employee.employee_no AS 'Mã NV',
-			employee_name AS 'Họ Tên',
+	SELECT cf_Employee.employee_no AS 'Mã NV',
+			employee_name AS 'Họ tên',
 			employee_dob AS 'Ngày sinh',
 			employee_id AS 'CMND',
 			employee_address AS 'Địa chỉ',
@@ -255,7 +191,7 @@ GO
 CREATE PROCEDURE getDrinkList
 AS
 BEGIN
-	SELECT drink_no, drink_name
+	SELECT drink_no, drink_name, drink_price
 	FROM dbo.Cf_Drink
 END
 GO
@@ -306,12 +242,14 @@ END
 GO
 
 CREATE PROCEDURE payBill
-@billNo INT
+@billNo INT,
+@total INT
 AS
 BEGIN
     UPDATE dbo.Cf_Bill
 	SET bill_stt = 1,
-		bill_checkouttime = GETDATE()
+		bill_checkouttime = GETDATE(),
+		bill_total = @total
 	WHERE bill_no = @billNo
 END
 GO
@@ -420,7 +358,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE UpdateEmpInfoByNo
+CREATE PROCEDURE updateEmpInfoByNo
 @empNo INT,
 @empName NVARCHAR(70),
 @empDob DATE,
@@ -440,6 +378,69 @@ BEGIN
 		SET account_type = @accType
 		WHERE employee_no = @empNo
 END
+GO
+
+CREATE PROCEDURE getDrinkInfoByNo
+@drinkNo INT
+AS
+BEGIN
+    SELECT *
+	FROM dbo.Cf_Drink
+	WHERE drink_no = @drinkNo;
+END
+GO
+
+CREATE PROCEDURE createDrink
+@name NVARCHAR(50),
+@price INT
+AS
+BEGIN
+    INSERT INTO dbo.Cf_Drink (drink_name, drink_price)
+    VALUES (@name, @price)
+END
+GO
+
+CREATE PROCEDURE deleteDrinkByNo
+@drinkNo INT
+AS
+BEGIN
+    DELETE FROM dbo.Cf_Drink
+	WHERE drink_no = @drinkNo
+END
+GO
+
+CREATE PROCEDURE updateDrinkInfoByNo
+@no INT,
+@name NVARCHAR(50),
+@price INT
+AS
+BEGIN
+    UPDATE dbo.Cf_Drink
+	SET drink_name = @name,
+		drink_price = @price
+	WHERE drink_no = @no
+END
+GO
+
+CREATE PROCEDURE getStatistic
+@type NVARCHAR(20),
+@fromDate NVARCHAR(8),
+@toDate NVARCHAR(8)
+AS
+BEGIN
+	IF (@type = 'all')
+		BEGIN
+			SELECT bill_no AS 'Mã hóa đơn', bill_checkintime AS 'Thời gian vào', bill_checkouttime AS 'Thời gian ra', table_no AS 'Số bàn', bill_total AS 'Tổng hóa đơn'
+			FROM dbo.Cf_Bill
+			WHERE bill_stt = 1
+		END;
+	ELSE
+		BEGIN
+		    SELECT bill_no AS 'Mã hóa đơn', bill_checkintime AS 'Thời gian vào', bill_checkouttime AS 'Thời gian ra', table_no AS 'Số bàn', bill_total AS 'Tổng hóa đơn'
+			FROM dbo.Cf_Bill
+			WHERE bill_checkintime >= '20211002' AND bill_checkouttime <= DATEADD(DAY,1,@toDate) AND bill_stt = 1
+		END;
+END;
 GO
 
 ------------------------------------------ TRIGGER
