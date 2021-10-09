@@ -197,7 +197,7 @@ namespace QuanLyQuanCafe
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(185)))), ((int)(((byte)(195)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(233)))), ((int)(((byte)(245)))));
             this.ClientSize = new System.Drawing.Size(1021, 503);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.pictureBox6);
