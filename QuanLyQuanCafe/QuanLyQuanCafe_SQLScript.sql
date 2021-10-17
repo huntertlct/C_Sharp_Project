@@ -104,6 +104,27 @@ VALUES
     )
 GO
 
+DECLARE @i INT = 1;
+WHILE @i <= 20
+BEGIN
+	INSERT INTO dbo.Cf_Table(table_name, table_stt )
+	VALUES( N'Bàn ' + CAST(@i AS VARCHAR(10)), N'Trống' )
+	SET @i = @i + 1
+END
+GO
+
+INSERT INTO dbo.Cf_Drink( drink_name, drink_price)
+VALUES( N'Cafe', 15000)
+GO
+
+INSERT INTO dbo.Cf_Drink( drink_name, drink_price)
+VALUES( N'Cafe Sữa', 20000)
+GO
+
+INSERT INTO dbo.Cf_Drink( drink_name, drink_price)
+VALUES( N'Sting', 10000)
+GO
+
 -- Procedure
 CREATE PROCEDURE getPwd
 @acc_user VARCHAR(50)

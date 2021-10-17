@@ -66,7 +66,7 @@ namespace QuanLyQuanCafe
         //kết nối cơ sở dữ liệu
         public SqlConnection ConnectDB()
         {
-            conn = new SqlConnection("Server=MATRIX_PHAN\\SQLEXPRESS; UID=sa; pwd=vip@123; Database=QuanLyQuanCafe");
+            conn = new SqlConnection("Server=MATRIX_PHAN; UID=sa; pwd=vip@123; Database=QuanLyQuanCafe");
             conn.Open();
             return conn;
         }
