@@ -17,35 +17,42 @@ namespace QuanLyQuanCafe
 
         private void Auth()
         {
-            if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 1)
+            if( txtUser.Text.Trim().Length > 0 && txtPwd.Text.Length > 0 )
             {
-                fAdmin = new AdminForm(func);
-                this.Hide();
-                fAdmin.ShowDialog();
-                if (fAdmin.IsDisposed)
+                if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 1)
                 {
-                    func.DisconnectDB();
-                    Application.Exit();
+                    fAdmin = new AdminForm(func);
+                    this.Hide();
+                    fAdmin.ShowDialog();
+                    if (fAdmin.IsDisposed)
+                    {
+                        func.DisconnectDB();
+                        Application.Exit();
+                    }
+                    this.Show();
+                    //txtUser.Clear();
+                    txtPwd.Clear();
                 }
-                this.Show();
-                //txtUser.Clear();
-                //txtPwd.Clear();
+                else if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 0)
+                {
+                    fStaff = new StaffForm(func);
+                    this.Hide();
+                    fStaff.ShowDialog();
+                    if (fStaff.IsDisposed)
+                    {
+                        func.DisconnectDB();
+                        Application.Exit();
+                    }
+                    this.Show();
+                    //txtUser.Clear();
+                    txtPwd.Clear();
+                }
+                else MessageBox.Show("Tài khoản hoặc mật khẩu không đúng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            else if (func.AccountAuth(txtUser.Text, txtPwd.Text) == 0)
+            else
             {
-                fStaff = new StaffForm(func);
-                this.Hide();
-                fStaff.ShowDialog();
-                if (fStaff.IsDisposed)
-                {
-                    func.DisconnectDB();
-                    Application.Exit();
-                }
-                this.Show();
-                //txtUser.Clear();
-                //txtPwd.Clear();
+                MessageBox.Show("Tài khoản hoặc mật khẩu không được bỏ trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            else MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         public Login()

@@ -11,7 +11,8 @@ namespace QuanLyQuanCafe
         private bool dragging = false;
         private Point startPoint = new Point(0, 0);
         private static Func func;
-        
+        private int locating;
+
         Home f1;
         Employees f2;
         Drinks f3;
@@ -74,31 +75,47 @@ namespace QuanLyQuanCafe
         private void label2_Click(object sender, EventArgs e)
         {
             ChangePwd f = new ChangePwd(func);
-            f.Show();
+            f.ShowDialog();
         }
 
         private void pictureBox8_Click(object sender, EventArgs e)
         {
-            HideAllForm();
-            f1.Show();
+            if( locating != 1 )
+            {
+                HideAllForm();
+                f1.Show();
+                locating = 1;
+            }
         }
 
         private void label6_Click(object sender, EventArgs e)
         {
-            HideAllForm();
-            f2.Show();
+            if ( locating != 2 )
+            {
+                HideAllForm();
+                f2.Show();
+                locating = 2;
+            }
         }
 
         private void label7_Click(object sender, EventArgs e)
         {
-            HideAllForm();
-            f3.Show();
+            if ( locating != 3 )
+            {
+                HideAllForm();
+                f3.Show();
+                locating = 3;
+            }
         }
 
         private void label3_Click(object sender, EventArgs e)
         {
-            HideAllForm();
-            f4.Show();
+            if ( locating != 4 )
+            {
+                HideAllForm();
+                f4.Show();
+                locating = 4;
+            }
         }
 
         private void AdminForm_Load(object sender, EventArgs e)
@@ -117,6 +134,7 @@ namespace QuanLyQuanCafe
             f4.AutoScroll = true;
             AdminPanel.Controls.Add(f4);
             f1.Show();
+            locating = 1;
         }
     }
 }

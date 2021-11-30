@@ -19,6 +19,7 @@ namespace QuanLyQuanCafe
         {
             InitializeComponent();
             func = tmp;
+            toDo = "";
         }
 
         private void Drinks_Load(object sender, EventArgs e)
@@ -49,9 +50,14 @@ namespace QuanLyQuanCafe
                 MessageBox.Show("Bạn đang ở chế độ cập nhật thông tin nước uống!", "Thông báo");
             else
             {
-                func.createDrink(txtDrinkName.Text, Convert.ToInt32(txtDrinkPrice.Text));
-                func.loadDrinkAdmin(dgvDrink, "");
-                bunifuButton4_Click(null, null);
+                if (txtDrinkName.Text.Length > 0 && txtDrinkPrice.Text.Length > 0)
+                {
+                    func.createDrink(txtDrinkName.Text, Convert.ToInt32(txtDrinkPrice.Text));
+                    func.loadDrinkAdmin(dgvDrink, "");
+                    bunifuButton4_Click(null, null);
+                }
+                else 
+                    MessageBox.Show("Tất cả các trường không được bỏ trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -63,15 +69,25 @@ namespace QuanLyQuanCafe
                 func.loadDrinkAdmin(dgvDrink, "");
                 bunifuButton4_Click(null, null);
             }
+            else
+                MessageBox.Show("Vui lòng chọn thức uống cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void bunifuButton2_Click(object sender, EventArgs e)
         {
-            if (txtDrinkNo.Text.Length > 0 && txtDrinkName.Text.Length > 0 && txtDrinkPrice.Text.Length > 0)
+            if ( txtDrinkNo.Text.Length > 0 )
             {
-                func.updateDrinkInfo(txtDrinkNo.Text, txtDrinkName.Text, txtDrinkPrice.Text);
-                func.loadDrinkAdmin(dgvDrink, "");
+                if( txtDrinkName.Text.Length > 0 && txtDrinkPrice.Text.Length > 0 )
+                {
+                    func.updateDrinkInfo(txtDrinkNo.Text, txtDrinkName.Text, txtDrinkPrice.Text);
+                    func.loadDrinkAdmin(dgvDrink, "");
+                    bunifuButton4_Click(null, null);
+                }   
+                else
+                    MessageBox.Show("Tất cả các trường không được bỏ trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            else
+                MessageBox.Show("Vui lòng chọn thức uống cần chỉnh sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

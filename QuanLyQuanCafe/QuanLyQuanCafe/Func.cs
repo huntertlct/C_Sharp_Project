@@ -42,19 +42,23 @@ namespace QuanLyQuanCafe
                 cmd = new SqlCommand("getPwd", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add("@acc_user", SqlDbType.VarChar).Value = user;
-                authpwd = cmd.ExecuteScalar().ToString();
-                string hPwd = ComputeHash(pwd, new SHA256CryptoServiceProvider());
-                hPwd = hPwd.Replace("-", "").ToLower();
-                if (hPwd.Equals(authpwd))
+                if (cmd.ExecuteScalar() != null)
                 {
-                    cmd = new SqlCommand("getEmpName", conn);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@acc_user", SqlDbType.VarChar).Value = user;
-                    this.user = user;
-                    this.displayName = cmd.ExecuteScalar().ToString();
-                    cmd = new SqlCommand("EXEC dbo.getAccType @acc_user = '" + user + "'", conn);
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+                    authpwd = cmd.ExecuteScalar().ToString();
+                    string hPwd = ComputeHash(pwd, new SHA256CryptoServiceProvider());
+                    hPwd = hPwd.Replace("-", "").ToLower();
+                    if (hPwd.Equals(authpwd))
+                    {
+                        cmd = new SqlCommand("getEmpName", conn);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@acc_user", SqlDbType.VarChar).Value = user;
+                        this.user = user;
+                        this.displayName = cmd.ExecuteScalar().ToString();
+                        cmd = new SqlCommand("EXEC dbo.getAccType @acc_user = '" + user + "'", conn);
+                        return Convert.ToInt32(cmd.ExecuteScalar());
+                    }
                 }
+                else return -1;
             }
             catch (SqlException ex)
             {
@@ -166,7 +170,7 @@ namespace QuanLyQuanCafe
                         int reusult = cmd.ExecuteNonQuery();
                         if (reusult == 1)
                         {
-                            MessageBox.Show("Đã thay đổi mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show("Đã đổi mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             return 0;
                         }
                         else MessageBox.Show("Lỗi thay đổi mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -338,7 +342,7 @@ namespace QuanLyQuanCafe
         //tạo nhân viên mới
         public void createEmployee(string name, string dobTmp, string id, string address, string account, int accType)
         {
-            if (this.Equals("steve") && accType == 1)
+            if ( (this.user.Equals("steve") && accType == 1) || accType != 1 )
             {
                 Array arr = dobTmp.Split('/');
                 string dob = "";
@@ -371,7 +375,7 @@ namespace QuanLyQuanCafe
             return emp;
         }
 
-        //đặt lại mật khẩu cho tài khoản
+        //đặt lại mật khẩu cho tài khoản là số cmnd
         public void resetPassword(string empNo)
         {
             if (empNo.Equals("1") && this.user.Equals("steve"))
@@ -389,21 +393,27 @@ namespace QuanLyQuanCafe
                 cmd = new SqlCommand(sqlstr, conn);
                 cmd.ExecuteNonQuery();
             }
-            else MessageBox.Show("Bạn không thể đặt lại mật khẩu cho tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else 
+                MessageBox.Show("Bạn không thể đặt lại mật khẩu cho tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         //xóa nhân viên
-        public void deleteEmployee(string empNo)
+        public void deleteEmployee(string empNo, string account)
         {
-            sqlstr = "EXEC dbo.deleteEmployeeByNo @empNo = " + empNo;
-            cmd = new SqlCommand(sqlstr, conn);
-            cmd.ExecuteNonQuery();
+            if( !empNo.Equals("1") && !account.Equals(this.user) )
+            {
+                sqlstr = "EXEC dbo.deleteEmployeeByNo @empNo = " + empNo;
+                cmd = new SqlCommand(sqlstr, conn);
+                cmd.ExecuteNonQuery();
+            }
+            else 
+                MessageBox.Show("Không thể xóa tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         //sửa thông tin nhân viên
         public void updateEmpInfo(string empNo, string name, string dobTmp, string id, string address, string accType)
         {
-            if (empNo.Equals("1") && this.user.Equals("steve"))
+            if ( (empNo.Equals("1") && this.user.Equals("steve")) || !empNo.Equals("1") )
             {
                 Array arr = dobTmp.Split('/');
                 string dob = "";

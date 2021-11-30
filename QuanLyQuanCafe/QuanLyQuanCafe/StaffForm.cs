@@ -15,6 +15,7 @@ namespace QuanLyQuanCafe
         private bool dragging = false;
         private Point startPoint = new Point();
         private static Func func;
+        private int locating;
 
         Home f1;
         Statistic f2;
@@ -64,14 +65,22 @@ namespace QuanLyQuanCafe
 
         private void pictureBox8_Click(object sender, EventArgs e)
         {
-            f2.Hide();
-            f1.Show();
+            if( locating != 1 )
+            {
+                f2.Hide();
+                f1.Show();
+                locating = 1;
+            }
         }
 
         private void pictureBox5_Click(object sender, EventArgs e)
         {
-            f1.Hide();
-            f2.Show();
+            if ( locating != 2 )
+            {
+                f1.Hide();
+                f2.Show();
+                locating = 2;
+            }
         }
 
         private void StaffForm_Load(object sender, EventArgs e)
@@ -84,6 +93,7 @@ namespace QuanLyQuanCafe
             f2.AutoScroll = true;
             StaffPanel.Controls.Add(f2);
             f1.Show();
+            locating = 1;
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)

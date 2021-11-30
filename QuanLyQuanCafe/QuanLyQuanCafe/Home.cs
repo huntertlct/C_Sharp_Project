@@ -123,6 +123,7 @@ namespace QuanLyQuanCafe
                     func.addBillDetail(billNo, drinkNo, drinkAmount);
                 }
                 showBill(table.No);
+                nudDrinkAmount.Value = 1;
             }
             catch(Exception ex)
             {
