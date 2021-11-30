@@ -228,12 +228,6 @@ namespace QuanLyQuanCafe
         }
 
         //lấy mã hóa đơn chưa thanh toán của bàn có số = tableNo
-        /// <summary>
-        /// Thành công: billNo
-        /// Thất bại: -1
-        /// </summary>
-        /// <param name="tableNo"></param>
-        /// <returns></returns>
         public int getUncheckBillNoByTableNo(int tableNo)
         {
             sqlstr = "EXEC getUncheckBillByTableNo @tableNo = " + tableNo;
@@ -378,7 +372,7 @@ namespace QuanLyQuanCafe
         //đặt lại mật khẩu cho tài khoản là số cmnd
         public void resetPassword(string empNo)
         {
-            if (empNo.Equals("1") && this.user.Equals("steve"))
+            if ( (empNo.Equals("1") && this.user.Equals("steve")) || !empNo.Equals("1") )
             {
                 sqlstr = "EXEC dbo.getEmployeeInfoByNo @empNo = " + empNo;
                 SqlDataAdapter da = new SqlDataAdapter(sqlstr, conn);
@@ -392,6 +386,7 @@ namespace QuanLyQuanCafe
                 sqlstr = "EXEC dbo.resetPwdByEmpNo @empNo = " + empNo + ", @newPwd = '" + hPwd + "'";
                 cmd = new SqlCommand(sqlstr, conn);
                 cmd.ExecuteNonQuery();
+                MessageBox.Show("Đã đặt lại mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else 
                 MessageBox.Show("Bạn không thể đặt lại mật khẩu cho tài khoản này!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);

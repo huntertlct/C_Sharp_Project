@@ -126,7 +126,6 @@ namespace QuanLyQuanCafe
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(249, 30);
             this.txtUser.TabIndex = 1;
-            this.txtUser.Text = "steve";
             this.txtUser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUser_KeyPress);
             // 
             // txtPwd
@@ -137,7 +136,6 @@ namespace QuanLyQuanCafe
             this.txtPwd.PasswordChar = '*';
             this.txtPwd.Size = new System.Drawing.Size(249, 30);
             this.txtPwd.TabIndex = 2;
-            this.txtPwd.Text = "123";
             this.txtPwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUser_KeyPress);
             // 
             // panel2

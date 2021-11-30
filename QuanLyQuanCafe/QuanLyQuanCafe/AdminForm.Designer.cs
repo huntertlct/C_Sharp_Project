@@ -72,8 +72,9 @@ namespace QuanLyQuanCafe
             this.lbAdminName.Location = new System.Drawing.Point(861, 12);
             this.lbAdminName.Name = "lbAdminName";
             this.lbAdminName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lbAdminName.Size = new System.Drawing.Size(0, 15);
+            this.lbAdminName.Size = new System.Drawing.Size(40, 15);
             this.lbAdminName.TabIndex = 7;
+            this.lbAdminName.Text = "admin";
             this.lbAdminName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lbAdminName.Click += new System.EventHandler(this.label2_Click);
             // 
