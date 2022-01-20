@@ -81,7 +81,7 @@ namespace QuanLyQuanCafe
             // pictureBox2
             // 
             this.pictureBox2.Image = global::QuanLyQuanCafe.Properties.Resources.close;
-            this.pictureBox2.Location = new System.Drawing.Point(300, 6);
+            this.pictureBox2.Location = new System.Drawing.Point(297, 8);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(18, 18);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
